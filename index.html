@@ -4,28 +4,571 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Siddharth | Project Zorithan</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #0a0a0f;
+        --surface: #111118;
+        --border: #1e1e2e;
+        --accent: #7c6af7;
+        --accent2: #a78bfa;
+        --text: #e2e2f0;
+        --muted: #6b6b8a;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated background grid */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--border) 1px, transparent 1px),
+          linear-gradient(90deg, var(--border) 1px, transparent 1px);
+        background-size: 60px 60px;
+        opacity: 0.4;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* Glow orb */
+      body::after {
+        content: '';
+        position: fixed;
+        top: -200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(circle, rgba(124, 106, 247, 0.12) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        animation: orb-drift 8s ease-in-out infinite alternate;
+      }
+
+      @keyframes orb-drift {
+        from { transform: translateX(-50%) translateY(0); }
+        to   { transform: translateX(-50%) translateY(40px); }
+      }
+
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 20px 48px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        backdrop-filter: blur(12px);
+        background: rgba(10, 10, 15, 0.7);
+        border-bottom: 1px solid var(--border);
+        animation: fade-down 0.6s ease both;
+      }
+
+      .nav-logo {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--accent2);
+        text-transform: uppercase;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        transition: color 0.2s;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      /* HERO */
+      .hero {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 120px 24px 80px;
+      }
+
+      .hero-tag {
+        display: inline-block;
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid rgba(124, 106, 247, 0.3);
+        padding: 6px 16px;
+        border-radius: 100px;
+        margin-bottom: 32px;
+        animation: fade-up 0.6s 0.2s ease both;
+      }
+
+      .hero-name {
+        font-size: clamp(52px, 10vw, 96px);
+        font-weight: 800;
+        letter-spacing: -2px;
+        line-height: 1;
+        margin-bottom: 8px;
+        animation: fade-up 0.6s 0.3s ease both;
+        background: linear-gradient(135deg, #ffffff 0%, var(--accent2) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-project {
+        font-size: clamp(14px, 3vw, 18px);
+        color: var(--muted);
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        margin-bottom: 40px;
+        animation: fade-up 0.6s 0.4s ease both;
+      }
+
+      .hero-desc {
+        max-width: 540px;
+        font-size: 17px;
+        line-height: 1.7;
+        color: var(--muted);
+        margin-bottom: 48px;
+        animation: fade-up 0.6s 0.5s ease both;
+      }
+
+      .hero-desc span {
+        color: var(--text);
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+        animation: fade-up 0.6s 0.6s ease both;
+      }
+
+      .btn {
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(124, 106, 247, 0.35);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent2);
+        transform: translateY(-2px);
+      }
+
+      /* SCROLL INDICATOR */
+      .scroll-hint {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        animation: fade-up 0.6s 1s ease both;
+      }
+
+      .scroll-line {
+        width: 1px;
+        height: 40px;
+        background: linear-gradient(to bottom, var(--accent), transparent);
+        animation: line-grow 1.5s 1.5s ease both, pulse-line 2s 3s ease-in-out infinite;
+      }
+
+      @keyframes line-grow {
+        from { transform: scaleY(0); transform-origin: top; }
+        to   { transform: scaleY(1); transform-origin: top; }
+      }
+
+      @keyframes pulse-line {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+      }
+
+      /* SECTIONS */
+      section {
+        position: relative;
+        z-index: 1;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 80px 24px;
+      }
+
+      .section-label {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-size: clamp(28px, 5vw, 40px);
+        font-weight: 700;
+        margin-bottom: 48px;
+        letter-spacing: -0.5px;
+      }
+
+      /* CERTS */
+      .certs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+      }
+
+      .cert-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cert-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s;
+      }
+
+      .cert-card:hover {
+        border-color: rgba(124, 106, 247, 0.4);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      .cert-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .cert-icon {
+        font-size: 28px;
+        margin-bottom: 16px;
+      }
+
+      .cert-name {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .cert-body {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* JOURNEY */
+      .journey-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      .phase-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        transition: all 0.3s;
+      }
+
+      .phase-card.done {
+        border-color: rgba(124, 106, 247, 0.3);
+      }
+
+      .phase-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .phase-number {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .phase-name {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .phase-status {
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 100px;
+        display: inline-block;
+      }
+
+      .phase-status.done {
+        background: rgba(124, 106, 247, 0.15);
+        color: var(--accent2);
+      }
+
+      .phase-status.next {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--muted);
+      }
+
+      /* FOOTER */
+      footer {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 40px 24px;
+        color: var(--muted);
+        font-size: 13px;
+        border-top: 1px solid var(--border);
+      }
+
+      footer a {
+        color: var(--accent2);
+        text-decoration: none;
+      }
+
+      /* ANIMATIONS */
+      @keyframes fade-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes fade-down {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .reveal-delay-1 { transition-delay: 0.1s; }
+      .reveal-delay-2 { transition-delay: 0.2s; }
+      .reveal-delay-3 { transition-delay: 0.3s; }
+
+      .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border), transparent);
+        max-width: 960px;
+        margin: 0 auto;
+      }
+    </style>
   </head>
   <body>
-    <h1>Siddharth</h1>
-    <p>17 years old. Self-taught. Based in India.</p>
 
-    <h2>Who I am</h2>
-    <p>
-      I never went to school or college. I learn everything on my own —
-      networking, cloud, web, infrastructure. This is my journey.
-    </p>
+    <nav>
+      <div class="nav-logo">Zorithan</div>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#certs">Certs</a></li>
+        <li><a href="#journey">Journey</a></li>
+      </ul>
+    </nav>
 
-    <h2>Certifications</h2>
-    <ul>
-      <li>CCNA — Networking</li>
-      <li>AWS Cloud Practitioner (CLF-C02)</li>
-      <li>AWS Solutions Architect Associate (SAA-C03)</li>
-    </ul>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-tag">Project Zorithan</div>
+      <h1 class="hero-name">Siddharth</h1>
+      <p class="hero-project">Self-Taught · India · 17</p>
+      <p class="hero-desc">
+        <span>No school. No college.</span> Just relentless learning —
+        networking, cloud, web, infrastructure. This is the journey of building
+        something powerful from nothing.
+      </p>
+      <div class="hero-cta">
+        <a href="#journey" class="btn btn-primary">View Journey</a>
+        <a href="https://github.com/sidd010508/zorithan" class="btn btn-ghost" target="_blank">GitHub</a>
+      </div>
+      <div class="scroll-hint">
+        <div class="scroll-line"></div>
+        <span>Scroll</span>
+      </div>
+    </div>
 
-    <h2>Project Zorithan</h2>
-    <p>
-      A multi-year journey to master web technologies, cloud infrastructure,
-      and hosting — from localhost to the cloud and back.
-    </p>
+    <div class="divider"></div>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <p class="section-label reveal">Background</p>
+      <h2 class="section-title reveal">Who I am</h2>
+      <p class="reveal" style="font-size: 17px; line-height: 1.8; color: var(--muted); max-width: 640px;">
+        I taught myself everything — from how a packet moves through a network
+        to how DNS resolves a domain. I hold two AWS certifications and a CCNA,
+        earned without any formal education. Zorithan is my proof-of-work:
+        a multi-year journey from a single webpage on localhost to full-stack
+        infrastructure on AWS and on-premise hardware.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CERTS -->
+    <section id="certs">
+      <p class="section-label reveal">Earned</p>
+      <h2 class="section-title reveal">Certifications</h2>
+      <div class="certs-grid">
+        <div class="cert-card reveal reveal-delay-1">
+          <div class="cert-icon">🌐</div>
+          <div class="cert-name">CCNA</div>
+          <div class="cert-body">Cisco Certified Network Associate — networking fundamentals, routing, switching, protocols.</div>
+        </div>
+        <div class="cert-card reveal reveal-delay-2">
+          <div class="cert-icon">☁️</div>
+          <div class="cert-name">AWS Cloud Practitioner</div>
+          <div class="cert-body">CLF-C02 — cloud concepts, AWS services, pricing, and architecture fundamentals.</div>
+        </div>
+        <div class="cert-card reveal reveal-delay-3">
+          <div class="cert-icon">⚡</div>
+          <div class="cert-name">AWS Solutions Architect</div>
+          <div class="cert-body">SAA-C03 — designing resilient, high-performing, and cost-optimised AWS architectures.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- JOURNEY -->
+    <section id="journey">
+      <p class="section-label reveal">Roadmap</p>
+      <h2 class="section-title reveal">The Zorithan Journey</h2>
+      <div class="journey-grid">
+        <div class="phase-card done reveal reveal-delay-1">
+          <div class="phase-number">Phase 1</div>
+          <div class="phase-name">Localhost</div>
+          <span class="phase-status done">Complete</span>
+        </div>
+        <div class="phase-card done reveal reveal-delay-2">
+          <div class="phase-number">Phase 2</div>
+          <div class="phase-name">LAN Hosting</div>
+          <span class="phase-status done">Complete</span>
+        </div>
+        <div class="phase-card done reveal reveal-delay-3">
+          <div class="phase-number">Phase 3</div>
+          <div class="phase-name">Free Cloud</div>
+          <span class="phase-status done">Complete</span>
+        </div>
+        <div class="phase-card done reveal reveal-delay-1">
+          <div class="phase-number">Phase 4</div>
+          <div class="phase-name">Domain</div>
+          <span class="phase-status done">Complete</span>
+        </div>
+        <div class="phase-card reveal reveal-delay-2">
+          <div class="phase-number">Phase 5</div>
+          <div class="phase-name">VPS</div>
+          <span class="phase-status next">Next</span>
+        </div>
+        <div class="phase-card reveal reveal-delay-3">
+          <div class="phase-number">Phase 6</div>
+          <div class="phase-name">AWS</div>
+          <span class="phase-status next">Upcoming</span>
+        </div>
+        <div class="phase-card reveal reveal-delay-1">
+          <div class="phase-number">Phase 7</div>
+          <div class="phase-name">Full Stack</div>
+          <span class="phase-status next">Upcoming</span>
+        </div>
+        <div class="phase-card reveal reveal-delay-2">
+          <div class="phase-number">Phase 8</div>
+          <div class="phase-name">On-Premise</div>
+          <span class="phase-status next">Upcoming</span>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Built from scratch — localhost to cloud. &nbsp;·&nbsp; <a href="https://github.com/sidd010508/zorithan" target="_blank">GitHub</a></p>
+    </footer>
+
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+          });
+        },
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    </script>
+
   </body>
 </html>
